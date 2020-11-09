@@ -57,12 +57,14 @@ const CreateOneBono = (req, res) => {
         id: bonos.length + 1,
         name: req.body.name,
         description: req.body.description,
-        product_id: req.body.product_id,
+        product_id: parseInt(req.body.product_id),
+        valid_since: req.body.valid_since,
+        valid_until: req.body.valid_until,
 
     })
     res.status(200).json({
         ok:true,
-        data : bonos
+        data : bonos.find(data => data.id === parseInt(bonos.length))
     });
 }
 const getAllBonos = (req, res) => {
@@ -73,11 +75,32 @@ const getAllBonos = (req, res) => {
         data : bonos
     });
 }
+const validateBono = (req, res) => {
+    // console.log(bonos.length + 1);
+    const bonofound = bonos.find(data => data.id === +req.params.id)
+
+    bonofound.valid_since = req.body.valid_since,
+    bonofound.valid_until= req.body.valid_until,
+    res.status(200).json({
+        ok:true,
+        data : bonos.find(data => data.id === +req.params.id)
+    });
+}
+const getOneBonos = (req, res) => {
+    // console.log(bonos.length + 1);
+    
+    res.status(200).json({
+        ok:true,
+        data : bonos.find(data => data.id === +req.params.id)
+    });
+}
 
 router.get('/productos/:id', [auth, getAOneProduct]); 
 router.get('/productos', [auth, getAllProducts]); 
 router.post('/bono/create', [auth, CreateOneBono]); 
 router.get('/bonos', [auth, getAllBonos]); 
+router.get('/bonos/:id', [auth, getOneBonos]); 
+router.post('/validateBono/:id', [authCustomer, validateBono]); 
 
 
 module.exports = router;
